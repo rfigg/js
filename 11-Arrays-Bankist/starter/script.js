@@ -64,11 +64,14 @@ const inputClosePin = document.querySelector('.form__input--pin');
 //////////////////////////////////////////////
 // Creating DOM elements (in bankist project)
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   // console.log(containerMovements.textContent);
   containerMovements.innerHTML = '';
 
-  movements.forEach(function (mov, i) {
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
+  // movements.forEach(function (mov, i) {
+  movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const html = `
       <div class="movements__row">
@@ -179,6 +182,53 @@ btnTransfer.addEventListener('click', function (e) {
     // console.log('Transfer valid');
     updateUI(currentAccount);
   }
+});
+
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  const loanAmount = Number(inputLoanAmount.value);
+  // console.log(loanAmount);
+  // from flowchart, needs any deposit > 10% of loan
+  if (
+    loanAmount > 0 &&
+    currentAccount.movements.some(mov => mov > loanAmount * 0.1)
+  ) {
+    currentAccount.movements.push(loanAmount);
+    updateUI(currentAccount);
+  }
+  inputLoanAmount.value = '';
+});
+
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    console.log('Close');
+    const i = accounts.findIndex(function (arr) {
+      return arr === currentAccount;
+      // he compares arr.username to currentAccount.username
+    });
+    // console.log(i);
+    // Delete account
+    accounts.splice(i, 1);
+    // Hide UI
+    containerApp.style.opacity = 0;
+  }
+  inputClosePin.value = inputCloseUsername.value = '';
+});
+
+let sorted = false;
+
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  sorted = !sorted;
+  displayMovements(currentAccount.movements, sorted);
+  // he calls with !sorted then flips sorted after
 });
 
 /////////////////////////////////////////////////
@@ -467,4 +517,320 @@ for (const acc of accounts) {
   }
 }
 console.log(accountFor);
+
+
+/////////////////////////////////////////////////
+// findLast and findLastIndex
+
+console.log(movements);
+const lastWithdrawal = movements.findLast(mov => mov < 0);
+// console.log(lastWithdrawal);
+
+// Challenge: generate using findLastIndex
+// 'Your latest large movement was X movements ago'
+// where large > 2000
+const lastLargeTransation = movements.findLastIndex(
+  mov => Math.abs(mov) > 1000,
+);
+// console.log(lastLargeTransation);
+console.log(
+  `Your latest large movement was ${movements.length - lastLargeTransation} movements ago`,
+);
+
+
+/////////////////////////////////////////////////
+// some and every
+
+console.log(movements);
+
+// only equality
+console.log(movements.includes(-130));
+
+// same with condition
+console.log(movements.some(mov => mov === -130));
+
+const anyDeposits = movements.some(mov => mov > 0);
+console.log(anyDeposits);
+
+// every
+console.log(movements.every(mov => mov > 0));
+console.log(account4.movements.every(mov => mov > 0));
+
+// Seperate callback
+const deposit = mov => mov > 0;
+console.log(movements.every(deposit));
+console.log(movements.some(deposit));
+console.log(movements.filter(deposit));
 */
+
+/////////////////////////////////////////////////
+// flat and flatMap
+/*
+const arr = [[1, 2, 3], [4, 5, 6], 7, 8];
+console.log(arr.flat());
+
+const arrDeep = [[[1, 2], 3], [4, [5, 6]], 7, 8];
+console.log(arrDeep.flat(2));
+
+const accountMovements = accounts.map(arr => arr.movements);
+console.log(accountMovements);
+const allMovements = accountMovements.flat();
+console.log(allMovements);
+const overallBalance = allMovements.reduce((acc, mov) => acc + mov, 0);
+console.log(overallBalance);
+
+const overallBalance2 = accounts
+  .map(arr => arr.movements)
+  .flat()
+  .reduce((acc, mov) => acc + mov, 0);
+console.log(overallBalance2);
+
+const overallBalance3 = accounts
+  .flatMap(arr => arr.movements)
+  .reduce((acc, mov) => acc + mov, 0);
+console.log(overallBalance3);
+*/
+
+////////////////////////////////////////////////////////
+// Challenge #4
+// Actually challenge #5, did it early except for the last question, course pdf is out of date.
+/*
+const breeds = [
+  {
+    breed: 'German Shepherd',
+    averageWeight: 32,
+    activities: ['fetch', 'swimming'],
+  },
+  {
+    breed: 'Dalmatian',
+    averageWeight: 24,
+    activities: ['running', 'fetch', 'agility'],
+  },
+  {
+    breed: 'Labrador',
+    averageWeight: 28,
+    activities: ['swimming', 'fetch'],
+  },
+  {
+    breed: 'Beagle',
+    averageWeight: 12,
+    activities: ['digging', 'fetch'],
+  },
+  {
+    breed: 'Husky',
+    averageWeight: 26,
+    activities: ['running', 'agility', 'swimming'],
+  },
+  {
+    breed: 'Bulldog',
+    averageWeight: 36,
+    activities: ['sleeping'],
+  },
+  {
+    breed: 'Poodle',
+    averageWeight: 18,
+    activities: ['agility', 'fetch'],
+  },
+];
+
+const dogs = [
+  { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+  { weight: 8, curFood: 200, owners: ['Matilda'] },
+  { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+  { weight: 32, curFood: 340, owners: ['Michael'] },
+];
+
+// 1
+dogs.forEach(function (dog) {
+  dog.recommendedFood = dog.weight ** 0.75 * 28;
+});
+
+// 2
+// Easy way
+// const sarahDog = dogs.find(dog => dog.owners.includes('Sarah'));
+// Using more from this unit
+const sarahDog = dogs.find(dog => dog.owners.some(owner => owner === 'Sarah'));
+// console.log(sarahDog);
+if (sarahDog.curFood > sarahDog.recommendedFood)
+  console.log("Sarah's dog is eating too much!");
+else if (sarahDog.curFood < sarahDog.recommendedFood)
+  console.log(`Sarah's dog is eating too little.`);
+
+// 3
+const ownersFatties = dogs
+  .filter(dog => dog.curFood > dog.recommendedFood)
+  .map(dog => dog.owners)
+  .flat();
+// console.log(ownersFatties);
+const ownersSkinnies = dogs
+  .filter(dog => dog.curFood < dog.recommendedFood)
+  .map(dog => dog.owners)
+  .flat();
+
+// 4
+console.log(`${ownersFatties.join(' and ')}'s dogs eat too much!`);
+console.log(`${ownersSkinnies.join(' and ')}'s dogs eat too little!`);
+
+// 5
+console.log(dogs.some(dog => dog.curFood === dog.recommendedFood));
+
+// refactor for 6 and 7
+const okayFood = dog =>
+  dog.curFood > dog.recommendedFood * 0.9 &&
+  dog.curFood < dog.recommendedFood * 1.1;
+
+// 6
+console.log(dogs.some(dog => okayFood(dog)));
+
+// 7
+// const okayDogs = dogs.filter(
+//   dog =>
+//     dog.curFood > dog.recommendedFood * 0.9 &&
+//     dog.curFood < dog.recommendedFood * 1.1,
+// );
+const okayDogs = dogs.filter(dog => okayFood(dog));
+console.log(okayDogs);
+
+// 8
+*/
+////////////////////////////////////////////////////////
+// Actual Challenge #4
+
+const breeds = [
+  {
+    breed: 'German Shepherd',
+    averageWeight: 32,
+    activities: ['fetch', 'swimming'],
+  },
+  {
+    breed: 'Dalmatian',
+    averageWeight: 24,
+    activities: ['running', 'fetch', 'agility'],
+  },
+  {
+    breed: 'Labrador',
+    averageWeight: 28,
+    activities: ['swimming', 'fetch'],
+  },
+  {
+    breed: 'Beagle',
+    averageWeight: 12,
+    activities: ['digging', 'fetch'],
+  },
+  {
+    breed: 'Husky',
+    averageWeight: 26,
+    activities: ['running', 'agility', 'swimming'],
+  },
+  {
+    breed: 'Bulldog',
+    averageWeight: 36,
+    activities: ['sleeping'],
+  },
+  {
+    breed: 'Poodle',
+    averageWeight: 18,
+    activities: ['agility', 'fetch'],
+  },
+];
+/*
+// 1
+const huskyWeight = breeds.find(
+  dogBreed => dogBreed.breed === 'Husky',
+).averageWeight;
+console.log(huskyWeight);
+
+// 2
+const dogBothActivities = breeds.find(
+  dogBreed =>
+    dogBreed.activities.includes('running') &&
+    dogBreed.activities.includes('fetch'),
+).breed;
+console.log(dogBothActivities);
+
+// 3
+// const allActivities = [];
+// breeds.forEach(breed => allActivities.push(...breed.activities));
+// const allActivities = breeds.map(breed => breed.activities).flat();
+const allActivities = breeds.flatMap(breed => breed.activities);
+console.log(allActivities);
+
+// 4
+const uniqueActivities = [...new Set(allActivities)];
+console.log(uniqueActivities);
+
+// 5
+// const swimmingAdjacent = breeds
+// .filter(breed => breed.activities.includes('swimming'))
+// .flatMap(breed => breed.activities.filter(act => act !== 'swimming'));
+const swimmingAdjacent = [
+  ...new Set(
+    breeds
+      .filter(breed => breed.activities.includes('swimming'))
+      .flatMap(breed => breed.activities)
+      .filter(act => act !== 'swimming'),
+  ),
+]; // this is his way, mine above
+console.log(swimmingAdjacent);
+
+// 6
+console.log(breeds.every(breed => breed.averageWeight >= 10));
+// he misunderstands his own question with logic more than 10
+
+// 7
+console.log(breeds.some(breed => breed.activities.length >= 3));
+
+// Bonus
+const fetchBreeds = breeds.filter(breed => breed.activities.includes('fetch'));
+console.log(fetchBreeds);
+
+const fetchBreedWeights = fetchBreeds.map(breed => breed.averageWeight);
+console.log(fetchBreedWeights);
+
+console.log(Math.max(...fetchBreedWeights));
+
+console.log(
+  Math.max(
+    ...breeds
+      .filter(breed => breed.activities.includes('fetch'))
+      .map(breed => breed.averageWeight),
+  ),
+);
+*/
+////////////////////////////////////////////////////////
+// Sorting Arrays
+/*
+// Strings
+const owners = ['Jonas', 'Zach', 'Adam', 'Martha'];
+console.log(owners.sort());
+
+// Numbers
+console.log(movements);
+// console.log(movements.sort());  // treats as strings
+
+// return < 0: A, B (keep order)
+// return > 0: B, A (switch order)
+
+// ascending
+// movements.sort((a, b) => {
+//   if (a > b) return 1;
+//   if (a < b) return -1;
+// });
+movements.sort((a, b) => a - b);
+console.log(movements);
+
+// descending
+// movements.sort((a, b) => {
+//   if (a > b) return -1;
+//   if (a < b) return 1;
+// });
+movements.sort((a, b) => b - a);
+console.log(movements);
+*/
+
+////////////////////////////////////////////////////////
+// Array Grouping
+
+console.log(movements);
+
+const groupedMovements =
