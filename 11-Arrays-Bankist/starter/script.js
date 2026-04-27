@@ -10,6 +10,7 @@ const account1 = {
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
   interestRate: 1.2, // %
   pin: 1111,
+  type: 'premium',
 };
 
 const account2 = {
@@ -17,6 +18,7 @@ const account2 = {
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
+  type: 'standard',
 };
 
 const account3 = {
@@ -24,6 +26,7 @@ const account3 = {
   movements: [200, -200, 340, -300, -20, 50, 400, -460],
   interestRate: 0.7,
   pin: 3333,
+  type: 'premium',
 };
 
 const account4 = {
@@ -31,6 +34,7 @@ const account4 = {
   movements: [430, 1000, 700, 50, 90],
   interestRate: 1,
   pin: 4444,
+  type: 'basic',
 };
 
 const accounts = [account1, account2, account3, account4];
@@ -592,8 +596,7 @@ console.log(overallBalance3);
 */
 
 ////////////////////////////////////////////////////////
-// Challenge #4
-// Actually challenge #5, did it early except for the last question, course pdf is out of date.
+// Actual Challenge #4
 /*
 const breeds = [
   {
@@ -632,107 +635,7 @@ const breeds = [
     activities: ['agility', 'fetch'],
   },
 ];
-
-const dogs = [
-  { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
-  { weight: 8, curFood: 200, owners: ['Matilda'] },
-  { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
-  { weight: 32, curFood: 340, owners: ['Michael'] },
-];
-
-// 1
-dogs.forEach(function (dog) {
-  dog.recommendedFood = dog.weight ** 0.75 * 28;
-});
-
-// 2
-// Easy way
-// const sarahDog = dogs.find(dog => dog.owners.includes('Sarah'));
-// Using more from this unit
-const sarahDog = dogs.find(dog => dog.owners.some(owner => owner === 'Sarah'));
-// console.log(sarahDog);
-if (sarahDog.curFood > sarahDog.recommendedFood)
-  console.log("Sarah's dog is eating too much!");
-else if (sarahDog.curFood < sarahDog.recommendedFood)
-  console.log(`Sarah's dog is eating too little.`);
-
-// 3
-const ownersFatties = dogs
-  .filter(dog => dog.curFood > dog.recommendedFood)
-  .map(dog => dog.owners)
-  .flat();
-// console.log(ownersFatties);
-const ownersSkinnies = dogs
-  .filter(dog => dog.curFood < dog.recommendedFood)
-  .map(dog => dog.owners)
-  .flat();
-
-// 4
-console.log(`${ownersFatties.join(' and ')}'s dogs eat too much!`);
-console.log(`${ownersSkinnies.join(' and ')}'s dogs eat too little!`);
-
-// 5
-console.log(dogs.some(dog => dog.curFood === dog.recommendedFood));
-
-// refactor for 6 and 7
-const okayFood = dog =>
-  dog.curFood > dog.recommendedFood * 0.9 &&
-  dog.curFood < dog.recommendedFood * 1.1;
-
-// 6
-console.log(dogs.some(dog => okayFood(dog)));
-
-// 7
-// const okayDogs = dogs.filter(
-//   dog =>
-//     dog.curFood > dog.recommendedFood * 0.9 &&
-//     dog.curFood < dog.recommendedFood * 1.1,
-// );
-const okayDogs = dogs.filter(dog => okayFood(dog));
-console.log(okayDogs);
-
-// 8
 */
-////////////////////////////////////////////////////////
-// Actual Challenge #4
-
-const breeds = [
-  {
-    breed: 'German Shepherd',
-    averageWeight: 32,
-    activities: ['fetch', 'swimming'],
-  },
-  {
-    breed: 'Dalmatian',
-    averageWeight: 24,
-    activities: ['running', 'fetch', 'agility'],
-  },
-  {
-    breed: 'Labrador',
-    averageWeight: 28,
-    activities: ['swimming', 'fetch'],
-  },
-  {
-    breed: 'Beagle',
-    averageWeight: 12,
-    activities: ['digging', 'fetch'],
-  },
-  {
-    breed: 'Husky',
-    averageWeight: 26,
-    activities: ['running', 'agility', 'swimming'],
-  },
-  {
-    breed: 'Bulldog',
-    averageWeight: 36,
-    activities: ['sleeping'],
-  },
-  {
-    breed: 'Poodle',
-    averageWeight: 18,
-    activities: ['agility', 'fetch'],
-  },
-];
 /*
 // 1
 const huskyWeight = breeds.find(
@@ -830,7 +733,282 @@ console.log(movements);
 
 ////////////////////////////////////////////////////////
 // Array Grouping
-
+/*
 console.log(movements);
 
-const groupedMovements =
+const groupedMovements = Object.groupBy(movements, movement =>
+  movement > 0 ? 'deposits' : 'withdrawals',
+);
+console.log(groupedMovements);
+
+const groupedByActivity = Object.groupBy(
+  accounts,
+  // acct => acct.movements.length,
+  acct => {
+    const movementCount = acct.movements.length;
+
+    if (movementCount >= 8) return 'very active';
+    if (movementCount >= 4) return 'active';
+    if (movementCount >= 1) return 'moderate';
+    return 'inactive';
+  },
+);
+console.log(groupedByActivity);
+
+// const groupedByType = Object.groupBy(accounts, account => account.type);
+// with destructuring
+const groupedByType = Object.groupBy(accounts, ({ type }) => type);
+console.log(groupedByType);
+*/
+
+////////////////////////////////////////////////////////
+// More ways to create and fill arrays
+/*
+const arr = [1, 2, 3, 4, 5, 6, 7];
+console.log(new Array(1, 2, 3, 4, 5, 6, 7));
+
+// Empty array + fill method
+const x = new Array(7);
+console.log(x);
+// x[1] = 4; // does work
+// console.log(x);
+console.log(x.map(() => 5)); // doesn't work
+
+// x.fill(1);
+x.fill(1, 3, 5); // boundaries like slice
+console.log(x);
+
+// fill existing array
+arr.fill(23, 2, 6);
+console.log(arr);
+
+// Array.from()
+const y = Array.from({ length: 7 }, () => 1);
+console.log(y);
+
+const z = Array.from({ length: 7 }, (_, i) => i + 1); // same callback params: current element, index, assuming whole array
+console.log(z);
+
+// mini challenge
+const diceRolls = Array.from(
+  { length: 100 },
+  () => Math.trunc(Math.random() * 6) + 1,
+);
+console.log(diceRolls);
+
+labelBalance.addEventListener('click', function () {
+  const movementsUI = Array.from(
+    document.querySelectorAll('.movements__value'),
+    el => Number(el.textContent.replace('€', '')),
+  );
+  console.log(movementsUI);
+
+  const movementsUI2 = [...document.querySelectorAll('.movements__value')]; // can do this but still have to map 
+  console.log(movementsUI2);
+});
+*/
+
+////////////////////////////////////////////////////////
+// Non-destructive alternatives
+/*
+console.log(movements);
+const reversedMovements = movements.toReversed();
+console.log(reversedMovements);
+console.log(movements);
+
+// toSorted, toSpliced
+// same as sort() and splice() in usage
+// movements[1] = 2000;
+const newMovements = movements.with(1, 2000);
+console.log(newMovements);
+*/
+
+////////////////////////////////////////////////////////
+// Array methods practice
+/*
+// 1
+const bankDepositSum = accounts
+  .flatMap(acc => acc.movements)
+  .filter(mov => mov > 0)
+  .reduce((sum, dep) => (sum += dep), 0);
+console.log(bankDepositSum);
+
+// 2
+const numDeposits1000 = accounts
+  .flatMap(acc => acc.movements)
+  .filter(mov => mov >= 1000).length;
+console.log(numDeposits1000);
+
+const numDeposits1000Reduce = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((count, dep) => (dep >= 1000 ? ++count : count), 0);
+console.log(numDeposits1000Reduce);
+
+let a = 10;
+console.log(++a); // postfix ++ operator returns previous value
+console.log(a);
+
+// 3
+// const sums = accounts
+const { deposits, withdrawals } = accounts
+  .flatMap(acc => acc.movements)
+  .reduce(
+    (sums, cur) => {
+      // cur > 0 ? (sums.deposits += cur) : (sums.withdrawals += cur);
+      sums[cur > 0 ? 'deposits' : 'withdrawals'] += cur;
+      return sums;
+    },
+    { deposits: 0, withdrawals: 0 },
+  );
+// console.log(sums);
+console.log(deposits, withdrawals);
+
+// 4
+const convertTitleCase = function (title) {
+  const capitalize = str => str[0].toUpperCase() + str.slice(1);
+
+  const exceptions = ['a', 'an', 'and', 'the', 'but', 'or', 'on', 'in', 'with'];
+
+  const titleCase = title
+    .toLowerCase()
+    .split(' ')
+    .map(word => (exceptions.includes(word) ? word : capitalize(word)))
+    .join(' ');
+
+  return capitalize(titleCase);
+};
+console.log(convertTitleCase('this is a nice title'));
+console.log(convertTitleCase('this is a LONG title but not too long'));
+console.log(convertTitleCase('and here is another title with an EXAMPLE'));
+*/
+
+////////////////////////////////////////////////////////
+// Challenge #4
+// Actually challenge #5, did it early except for the last question, course pdf is out of date.
+
+const breeds = [
+  {
+    breed: 'German Shepherd',
+    averageWeight: 32,
+    activities: ['fetch', 'swimming'],
+  },
+  {
+    breed: 'Dalmatian',
+    averageWeight: 24,
+    activities: ['running', 'fetch', 'agility'],
+  },
+  {
+    breed: 'Labrador',
+    averageWeight: 28,
+    activities: ['swimming', 'fetch'],
+  },
+  {
+    breed: 'Beagle',
+    averageWeight: 12,
+    activities: ['digging', 'fetch'],
+  },
+  {
+    breed: 'Husky',
+    averageWeight: 26,
+    activities: ['running', 'agility', 'swimming'],
+  },
+  {
+    breed: 'Bulldog',
+    averageWeight: 36,
+    activities: ['sleeping'],
+  },
+  {
+    breed: 'Poodle',
+    averageWeight: 18,
+    activities: ['agility', 'fetch'],
+  },
+];
+
+// const dogs = [
+//   { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+//   { weight: 8, curFood: 200, owners: ['Matilda'] },
+//   { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+//   { weight: 32, curFood: 340, owners: ['Michael'] },
+// ];
+
+const dogs = [
+  { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+  { weight: 8, curFood: 200, owners: ['Matilda'] },
+  { weight: 13, curFood: 275, owners: ['Sarah', 'John', 'Leo'] },
+  { weight: 18, curFood: 244, owners: ['Joe'] },
+  { weight: 32, curFood: 340, owners: ['Michael'] },
+];
+
+// 1
+dogs.forEach(function (dog) {
+  dog.recommendedFood = Math.floor(dog.weight ** 0.75 * 28);
+});
+// he uses arrow func. also arbitrarily uses math.floor to get one equality
+
+// 2
+// Easy way
+const sarahDog = dogs.find(dog => dog.owners.includes('Sarah'));
+// Using more from this unit
+// const sarahDog = dogs.find(dog => dog.owners.some(owner => owner === 'Sarah'));
+// console.log(sarahDog);
+if (sarahDog.curFood > sarahDog.recommendedFood)
+  console.log("Sarah's dog is eating too much!");
+else if (sarahDog.curFood < sarahDog.recommendedFood)
+  console.log(`Sarah's dog is eating too little.`);
+// he uses one log with one template literal, doesn't account for equality (or rather includes in 2nd ternary option)
+
+// 3
+const ownersFatties = dogs
+  .filter(dog => dog.curFood > dog.recommendedFood)
+  .map(dog => dog.owners)
+  .flat();
+// console.log(ownersFatties);
+const ownersSkinnies = dogs
+  .filter(dog => dog.curFood < dog.recommendedFood)
+  .map(dog => dog.owners)
+  .flat();
+// he uses flatmap
+
+// 4
+console.log(`${ownersFatties.join(' and ')}'s dogs eat too much!`);
+console.log(`${ownersSkinnies.join(' and ')}'s dogs eat too little!`);
+
+// 5
+console.log(dogs.some(dog => dog.curFood === dog.recommendedFood));
+
+// refactor for 6 and 7
+const okayFood = dog =>
+  dog.curFood > dog.recommendedFood * 0.9 &&
+  dog.curFood < dog.recommendedFood * 1.1;
+
+// 6
+console.log(dogs.every(dog => okayFood(dog)));
+
+// 7
+// const okayDogs = dogs.filter(
+//   dog =>
+//     dog.curFood > dog.recommendedFood * 0.9 &&
+//     dog.curFood < dog.recommendedFood * 1.1,
+// );
+const okayDogs = dogs.filter(dog => okayFood(dog));
+console.log(okayDogs);
+
+// 8
+const groupedByFood = Object.groupBy(dogs, dog => {
+  if (dog.curFood < dog.recommendedFood) return 'too-little';
+  if (dog.curFood > dog.recommendedFood) return 'too-much';
+  return 'exact';
+});
+console.log(groupedByFood);
+// he uses if else, but my way is recommended by interwebs
+
+// 9
+const groupedByOwners = Object.groupBy(dogs, dog => dog.owners.length);
+console.log(groupedByOwners);
+// he uses template literal to make nicer categories
+
+// 10
+const sortedDogs = dogs.toSorted(
+  (dog1, dog2) => dog1.recommendedFood - dog2.recommendedFood,
+);
+console.log(sortedDogs);
