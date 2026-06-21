@@ -325,7 +325,7 @@ DATA CAR 1: 'Tesla' going at 120 km/h, with a charge of 23%
 
 GOOD LUCK 😀
 */
-
+/*
 const Car = function (make, speed) {
   this.make = make;
   this.speed = speed;
@@ -375,3 +375,305 @@ tesla.accelerate();
 tesla.brake();
 tesla.brake();
 tesla.brake();
+*/
+//////////////////////////////////////////////////////////////
+// Ineritance with ES6 Classes
+/*
+class PersonCl {
+  constructor(fullName, birthYear) {
+    this.fullName = fullName;
+    this.birthYear = birthYear;
+  }
+
+  calcAge() {
+    console.log(2037 - this.birthYear);
+  }
+
+  greet() {
+    console.log(`Heelloooo ${this.firstName}!`);
+  }
+
+  get age() {
+    return 2037 - this.birthYear;
+  }
+
+  set fullName(name) {
+    if (name.includes(' ')) this._fullName = name;
+    else alert(`${name} is not a full name, dummy!`);
+  }
+
+  get fullName() {
+    return this._fullName;
+  }
+
+  static hey() {
+    console.log('Hey there');
+    console.log(this);
+  }
+}
+
+class StudentCl extends PersonCl {
+  constructor(fullName, birthYear, course) {
+    // Always need to happen first
+    super(fullName, birthYear);
+    this.course = course;
+  }
+
+  introduce() {
+    console.log(`Hi, my name is ${this.fullName} and I study ${this.course}`);
+  }
+
+  calcAge() {
+    console.log(
+      `I'm ${2037 - this.birthYear} years old, but by logic that makes no sense, as a student I feel ${2037 - this.birthYear + 10}`,
+    );
+  }
+}
+
+// const martha = new StudentCl('Martha Jones', 2012);
+const martha = new StudentCl('Martha Jones', 2012, 'Computer Science');
+martha.introduce();
+martha.calcAge();
+*/
+
+/////////////////////////////////////////////////////////////
+// Ineritance with Object.create()
+/*
+const PersonProto = {
+  calcAge() {
+    console.log(2037 - this.birthYear);
+  },
+
+  init(firstName, birthYear) {
+    this.firstName = firstName;
+    this.birthYear = birthYear;
+  },
+};
+
+const steven = Object.create(PersonProto);
+
+const StudentProto = Object.create(PersonProto);
+StudentProto.init = function (firstName, birthYear, course) {
+  PersonProto.init.call(this, firstName, birthYear);
+  this.course = course;
+};
+StudentProto.introduce = function () {
+  console.log(`Hi, my name is ${this.firstName} and I study ${this.course}`);
+};
+
+const jay = Object.create(StudentProto);
+jay.init('Jay', 2010, 'Computer Science');
+jay.introduce();
+jay.calcAge();
+*/
+
+/////////////////////////////////////////////////////////////
+// Another object example
+/*
+class Account {
+  constructor(owner, currency, pin) {
+    this.owner = owner;
+    this.currency = currency;
+    this.pin = pin;
+    this.movements = [];
+    this.locale = navigator.language;
+
+    console.log(`Thanks for opening an account, ${owner}`);
+  }
+
+  deposit(val) {
+    this.movements.push(val);
+  }
+
+  withdraw(val) {
+    // this.movements.push(-val);
+    this.deposit(-val);
+  }
+
+  approveLoan(val) {
+    return true; // simple for encapsulation example
+  }
+
+  requestLoan(val) {
+    if (this.approveLoan(val)) {
+      this.deposit(val);
+      console.log('Loan approved!');
+    }
+  }
+}
+
+const acc1 = new Account('Jonas', 'EUR', 1111);
+
+// acc1.movements.push(250);
+// acc1.movements.push(-140);
+acc1.deposit(250);
+acc1.withdraw(140);
+acc1.requestLoan(1000);
+acc1.approveLoan(1000); // shouldn't be accessible
+
+console.log(acc1);
+console.log(acc1.pin);
+*/
+/////////////////////////////////////////////////////////////
+// Encapsulation
+
+// 1. Public fields
+// 2. Private fields
+// 3. public methods
+// 4. private methods
+// STATIC version of these 4
+/*
+class Account {
+  locale = navigator.language;
+  bank = 'Bankist';
+  #movements = [];
+  #pin;
+
+  constructor(owner, currency, pin) {
+    this.owner = owner;
+    this.currency = currency;
+    this.#pin = pin;
+
+    // this.movements = [];
+    // this.locale = navigator.language;
+
+    console.log(`Thanks for opening an account, ${owner}`);
+  }
+
+  // Public interface (API)
+  getMovements() {
+    return this.#movements;
+    // not chainable, but can be put at end
+  }
+  deposit(val) {
+    this.#movements.push(val);
+    return this;
+  }
+
+  withdraw(val) {
+    // this.movements.push(-val);
+    this.deposit(-val);
+    return this;
+  }
+
+  #approveLoan(val) {
+    return true; // simple for encapsulation example
+  }
+
+  requestLoan(val) {
+    if (this.#approveLoan(val)) {
+      this.deposit(val);
+      console.log('Loan approved!');
+    }
+    return this;
+  }
+
+  static test() {
+    console.log('Testing!');
+  }
+}
+
+const acc1 = new Account('Jonas', 'EUR', 1111);
+// acc1.deposit(300);
+// acc1.withdraw(100);
+// acc1.movements = []; // just adds new property now
+
+// console.log(acc1);
+// console.log(acc1.movements);
+// console.log(acc1.#movements);
+// acc1.#approveLoan(343);
+
+// Account.test();
+// acc1.test();
+
+// Chaining methods
+const m = acc1
+  .deposit(300)
+  .withdraw(100)
+  .withdraw(50)
+  .requestLoan(25000)
+  // .getMovements() // bad method to chain
+  .withdraw(4000)
+  .getMovements();
+
+console.log(acc1);
+console.log(m);
+*/
+
+/////////////////////////////////////////////////////////////
+// Coding Challenge #4
+/* 
+1. Re-create challenge #3, but this time using ES6 classes: create an 'EVCl' child class of the 'CarCl' class
+2. Make the 'charge' property private;
+3. Implement the ability to chain the 'accelerate' and 'chargeBattery' methods of this class, and also update the 'brake' method in the 'CarCl' class. They experiment with chining!
+
+DATA CAR 1: 'Rivian' going at 120 km/h, with a charge of 23%
+
+GOOD LUCK 😀
+*/
+
+class CarCl {
+  constructor(make, speed) {
+    this.make = make;
+    this.speed = speed;
+  }
+
+  accelerate() {
+    this.speed += 10;
+    console.log(this.speed);
+  }
+
+  brake() {
+    this.speed -= 5;
+    console.log(this.speed);
+  }
+
+  get speedUS() {
+    return this.speed / 1.6;
+  }
+
+  set speedUS(speed) {
+    this.speed = speed * 1.6;
+  }
+}
+
+class EVCl extends CarCl {
+  #charge;
+
+  constructor(make, speed, charge) {
+    super(make, speed);
+    this.#charge = charge;
+  }
+
+  chargeBattery(chargeTo) {
+    this.#charge = chargeTo;
+    console.log(`${this.make} battery charged to ${this.#charge}%`);
+    return this;
+  }
+
+  accelerate() {
+    this.speed += 20;
+    this.#charge--;
+    console.log(
+      `${this.make} going at ${this.speed} km/h, with a charge of ${this.#charge}%`,
+    );
+    return this;
+  }
+
+  brake() {
+    super.brake(); // he didn't do this, i guessed and it worked. he altered brake in super class by adding this
+    return this;
+  }
+}
+
+const rivian = new EVCl('Rivian', 120, 23);
+console.log(rivian);
+// console.log(rivian.#charge);
+rivian
+  .accelerate()
+  .accelerate()
+  .accelerate()
+  .brake()
+  .brake()
+  .chargeBattery(90)
+  .accelerate();
