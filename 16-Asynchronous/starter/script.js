@@ -4,6 +4,7 @@ const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
 const renderCountry = function (data, className = '') {
+  //   console.log(data);
   const html = `
     <article class="country ${className}">
         <img class="country__img" src="${data.flag}" />
@@ -17,12 +18,12 @@ const renderCountry = function (data, className = '') {
     </article>
   `;
   countriesContainer.insertAdjacentHTML('beforeend', html);
-  //   countriesContainer.style.opacity = 1;
+  countriesContainer.style.opacity = 1;
 };
 
 const renderError = function (msg) {
   countriesContainer.insertAdjacentText('beforeend', msg);
-  //   countriesContainer.style.opacity = 1;
+  countriesContainer.style.opacity = 1;
 };
 
 // NEW COUNTRIES API URL (use instead of the URL shown in videos):
@@ -488,6 +489,7 @@ TEST DATA: Images in the img folder. Test the error handler by passing a wrong i
 
 GOOD LUCK 😀
 */
+/*
 let currentImg;
 
 const wait = function (seconds) {
@@ -544,3 +546,240 @@ createImage('img/img-1.jpg')
 // createImage('img/img-1.jpgggggg')
 //   .then(res => console.log(res))
 //   .catch(err => console.log(err));
+*/
+
+///////////////////////////////////////
+// Consuming promises with async/await
+/*
+const getPosition = function () {
+  return new Promise(function (resolve, reject) {
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
+
+const whereAmI = async function () {
+  try {
+    // geolocation
+    const pos = await getPosition();
+    const { latitude: lat, longitude: lng } = pos.coords;
+
+    // reverse geocoding
+    const resGeo = await fetch(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`,
+    );
+    if (!resGeo.ok) throw new Error('Problem getting location data');
+
+    const dataGeo = await resGeo.json();
+    // console.log(dataGeo);
+
+    // country data
+    // same as below
+    //   fetch(
+    //     `https://countries-api-836d.onrender.com/countries/name/${country}`,
+    //   ).then(res => console.log(res));
+
+    const res = await fetch(
+      `https://countries-api-836d.onrender.com/countries/alpha/${dataGeo.countryCode}`,
+    );
+    if (!res.ok) throw new Error('Problem getting country');
+
+    const data = await res.json();
+    // console.log(data);
+    renderCountry(data);
+
+    return `You are in ${dataGeo.city}, ${dataGeo.countryName}`;
+  } catch (err) {
+    console.error(`${err} 💥`);
+    renderError(`Something went wrong 💥 ${err.message}`);
+
+    // Reject promise returned from async function
+    throw err;
+  }
+};
+
+console.log('1: Will get location');
+// const city = whereAmI();
+// console.log(city);
+
+whereAmI()
+  .then(city => console.log(`2: ${city}`))
+  .catch(err => console.error(`2: ${err.message} 😭`))
+  .finally(() => console.log('3: Finished getting location'));
+
+// Challenge: do above as IIFE
+(async function () {
+  try {
+    const city = await whereAmI();
+    console.log(`2: ${city}`);
+  } catch (err) {
+    console.error(`2: ${err.message} 😭`);
+  }
+  console.log('3: Finished getting location');
+})();
+
+// try {
+//   let y = 1;
+//   const x = 2;
+//   y = 3;
+// } catch (err) {
+//   alert(err.message);
+// }
+*/
+
+///////////////////////////////////////
+// Running Promises in Parallel
+/*
+const get3Countries = async function (c1, c2, c3) {
+  try {
+    // const [data1] = await getJSON(
+    //   `https://countries-api-836d.onrender.com/countries/name/${c1}`,
+    // );
+    // const [data2] = await getJSON(
+    //   `https://countries-api-836d.onrender.com/countries/name/${c2}`,
+    // );
+    // const [data3] = await getJSON(
+    //   `https://countries-api-836d.onrender.com/countries/name/${c3}`,
+    // );
+    // console.log([data1.capital, data2.capital, data3.capital]);
+
+    const data = await Promise.all([
+      getJSON(`https://countries-api-836d.onrender.com/countries/name/${c1}`),
+      getJSON(`https://countries-api-836d.onrender.com/countries/name/${c2}`),
+      getJSON(`https://countries-api-836d.onrender.com/countries/name/${c3}`),
+    ]);
+    console.log(data.map(d => d[0].capital));
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+get3Countries('portugal', 'canada', 'tanzania');
+*/
+///////////////////////////////////////
+// Other promise combinators: race, allSettled, any
+/*
+// Promise.race
+(async function () {
+  const res = await Promise.race([
+    getJSON(`https://countries-api-836d.onrender.com/countries/name/italy`),
+    getJSON(`https://countries-api-836d.onrender.com/countries/name/egypt`),
+    getJSON(`https://countries-api-836d.onrender.com/countries/name/mexico`),
+  ]);
+  console.log(res[0]);
+})();
+
+const timeout = function (sec) {
+  return new Promise(function (_, reject) {
+    setTimeout(function () {
+      reject(new Error('request took too long'));
+    }, sec * 1000);
+  });
+};
+
+Promise.race([
+  getJSON(`https://countries-api-836d.onrender.com/countries/name/tanzania`),
+  timeout(0.2),
+])
+  .then(res => console.log(res[0]))
+  .catch(err => console.error(err));
+
+// Promise.allSettled
+Promise.allSettled([
+  Promise.resolve('Success!'),
+  Promise.reject('ERROR'),
+  Promise.resolve('Another success'),
+])
+  .then(res => console.log(res))
+  .catch(err => console.error(err));
+
+// Promise.any
+Promise.any([
+  Promise.resolve('Success!'),
+  Promise.reject('ERROR'),
+  Promise.resolve('Another success'),
+])
+  .then(res => console.log(res))
+  .catch(err => console.error(err));
+
+*/
+
+///////////////////////////////////////
+// Coding Challenge #3
+
+/* 
+PART 1
+Write an async function 'loadNPause' that recreates Coding Challenge #2, this time using async/await (only the part where the promise is consumed). Compare the two versions, think about the big differences, and see which one you like more.
+Don't forget to test the error handler, and to set the network speed to 'Fast 3G' in the dev tools Network tab.
+
+PART 2
+1. Create an async function 'loadAll' that receives an array of image paths 'imgArr';
+2. Use .map to loop over the array, to load all the images with the 'createImage' function (call the resulting array 'imgs')
+3. Check out the 'imgs' array in the console! Is it like you expected?
+4. Use a promise combinator function to actually get the images from the array 😉
+5. Add the 'paralell' class to all the images (it has some CSS styles).
+
+TEST DATA: ['img/img-1.jpg', 'img/img-2.jpg', 'img/img-3.jpg']. To test, turn off the 'loadNPause' function.
+
+GOOD LUCK 😀
+*/
+
+const wait = function (seconds) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, seconds * 1000);
+  });
+};
+
+const createImage = function (imgPath) {
+  return new Promise(function (resolve, reject) {
+    const newImg = document.createElement('img');
+
+    newImg.addEventListener('load', function () {
+      document.querySelector('.images').append(newImg);
+      resolve(newImg);
+    });
+
+    newImg.addEventListener('error', function () {
+      reject(new Error("Couldn't load the dang image!"));
+    });
+
+    newImg.src = imgPath;
+  });
+};
+
+const loadNPause = async function () {
+  try {
+    const img1 = await createImage('img/img-1.jpg');
+    await wait(2);
+    img1.style.display = 'none';
+    const img2 = await createImage('img/img-2.jpg');
+    await wait(2);
+    img2.style.display = 'none';
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+// loadNPause();
+
+const loadAll = async function (imgArr) {
+  try {
+    // const imgs = imgArr.map(async img => await createImage(img));
+    const imgs = await Promise.all(
+      imgArr.map(async function (img) {
+        return createImage(img);
+      }),
+    );
+
+    console.log(imgs);
+    imgs.forEach(img => img.classList.add('parallel'));
+
+    // his solution: same as commented code above plus:
+    // const imageEl = await Promise.all(imgs);
+    // imgEl.forEach(.....)
+    // Mine seems to work in parallel, maybe I'm missing something
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+loadAll(['img/img-1.jpg', 'img/img-2.jpg', 'img/img-3.jpg']);
