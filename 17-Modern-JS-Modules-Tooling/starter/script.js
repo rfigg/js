@@ -4,8 +4,8 @@
 // // console.log(shippingCost);
 // addToCart('bread', 5);
 // console.log(price, tq);
-/*
-console.log('Importing module');
+
+// console.log('Importing module');
 
 // import * as ShoppingCart from './shoppingCart.js';
 // ShoppingCart.addToCart('bread', 5);
@@ -21,7 +21,7 @@ console.log(cart);
 
 ////////////////////////////////////////////////
 // Top-level await
-
+/*
 // const res = await fetch('https://jsonplaceholder.typicode.com/posts');
 // const data = await res.json();
 // console.log(data);
@@ -83,12 +83,61 @@ console.log(ShoppingCart2.shippingCost);
 // CommonJS modules
 
 // Export
-export.addToCart = function (product, quantity) {
-    cart.push({ product, quantity });
-    console.log(
-      `${quantity} ${product} added to cart (shipping cost is ${shippingCost})`,
-    );
-  };
+// export.addToCart = function (product, quantity) {
+//     cart.push({ product, quantity });
+//     console.log(
+//       `${quantity} ${product} added to cart (shipping cost is ${shippingCost})`,
+//     );
+//   };
 
 // Import
-const { addToCart } = require('./shoppingCart.js')
+// const {ls addToCart } = require('./shoppingCart.js');
+
+////////////////////////////////////////////////
+// NPM
+
+// lodash
+// import cloneDeep from './node_modules/lodash-es/cloneDeep.js';
+import cloneDeep from 'lodash-es'; // bundler finds it
+
+const state = {
+  cart: [
+    { product: 'bread', quantity: 5 },
+    { product: 'pizza', quantity: 5 },
+  ],
+  user: { loggedIn: true },
+};
+// console.log(state);
+const stateClone = Object.assign({}, state);
+const stateDeepClone = cloneDeep(state);
+
+state.user.loggedIn = false;
+console.log(stateClone); // shallow copy, contains references
+
+console.log(stateDeepClone);
+
+if (module.hot) {
+  module.hot.accept();
+}
+
+class Person {
+  #greeting = 'Hey';
+  constructor(name) {
+    this.name = name;
+    console.log(`${this.#greeting}, ${this.name}`);
+  }
+}
+
+const ryan = new Person('Ryan');
+
+console.log('Ryan' ?? null); // i guess this was still experimental at the time of the class
+
+console.log(cart.find(el => el.quantity >= 2));
+Promise.resolve('TEST').then(x => console.log(x));
+
+import 'core-js/stable';
+// import 'core-js/stable/array/find';
+// import 'core-js/stable/promise';
+
+// Polyfilling async functions
+import 'regenerator-runtime/runtime';
